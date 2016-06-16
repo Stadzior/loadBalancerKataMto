@@ -15,14 +15,13 @@ public class ServerLoadBalancerTest {
 
 	@Test
 	public void balancingAServer_noVms_serverStaysEmpty() {
-		Server theServer = a(server().withCapacity(1));
-
+		Server theServer = InvokeBuilder(server().withCapacity(1));
 		balance(aListOfServersWith(theServer), anEmptyListOfVms());
 
 		assertThat(theServer, hasLoadPercentageOf(0.0d));
 	}
 
-	private void balance(Server[] servers, Vm[] vms) {
+    private void balance(Server[] servers, Vm[] vms) {
 		new ServerLoadBalancer().balance(servers, vms);
 	}
 
@@ -34,7 +33,7 @@ public class ServerLoadBalancerTest {
 		return new Server[] { server };
 	}
 
-	private Server a(ServerBuilder builder) {
+	private Server InvokeBuilder(ServerBuilder builder) {
 		return builder.build();
 	}
 
