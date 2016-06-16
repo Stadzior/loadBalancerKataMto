@@ -3,9 +3,6 @@ package edu.iis.mto.serverloadbalancer;
 import edu.iis.mto.serverloadbalancer.Collections.ServerCollection;
 import edu.iis.mto.serverloadbalancer.Collections.VmCollection;
 
-/**
- * Created by Kamil on 2016-06-16.
- */
 public class ServerLoadBalancer {
 
     private VmCollection vms;
