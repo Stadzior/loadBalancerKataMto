@@ -6,6 +6,11 @@ package edu.iis.mto.serverloadbalancer;
 public class VmBuilder {
     private Vm vm;
 
+    VmBuilder(){
+        vm = new Vm();
+    }
+
+
     VmBuilder withSize(int size){
         vm.setSize(size);
         return this;
