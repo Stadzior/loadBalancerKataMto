@@ -27,8 +27,8 @@ public class ServerLoadBalancer {
 
         for(Server server : servers){
 
-            sizeLeftOnServer = (100.0d - server.getLoad())*server.getCapacity();
-            serverHasEnoughCapacity = sizeLeftOnServer>vm.getSize();
+            sizeLeftOnServer = (100.0d - server.getLoad())*server.getCapacity()/100;
+            serverHasEnoughCapacity = sizeLeftOnServer>=vm.getSize();
 
             if(serverHasEnoughCapacity)
                 capableServers.add(server);
