@@ -32,6 +32,10 @@ public class Server {
         return vms;
     }
 
+    public int sizeLeft(){
+        return (int)(100.0d - getLoad())*getCapacity()/100;
+    }
+
     public void addVm(Vm vm){
         vms.add(vm);
         double consumedLoad = ((double)vm.getSize()/(double)getCapacity())*100.0d;

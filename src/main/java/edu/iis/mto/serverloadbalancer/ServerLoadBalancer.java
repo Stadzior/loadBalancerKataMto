@@ -11,31 +11,72 @@ public class ServerLoadBalancer {
     public void balance() {
         for(Vm vm : vms) {
             try {
-                findLeastLoadedServer(findServersWithEnoughCapacity(servers, vm)).addVm(vm);
+                findLeastLoadedServer(findServersWithEnoughSpace(servers, vm)).addVm(vm);
             }catch(ThereIsNoCapableServerForThisVmException e){
-                System.out.println(e.getMessage());
+                if(thereIsEnoughAvailableSpaceOverall(servers,vm.getSize()) && thereIsVmWhichCanBeMoved(servers,vms)) {
+                    reassignVmsToFillUnusedSpace(servers, vms);
+                }else {
+                    System.out.println(e.getMessage());
+                }
             }
         }
     }
 
-    private ServerCollection findServersWithEnoughCapacity(ServerCollection servers, Vm vm) throws ThereIsNoCapableServerForThisVmException {
+    private boolean thereIsVmWhichCanBeMoved(ServerCollection servers,VmCollection vms) {
+        for(Server server :servers){
+            for(Vm vm : vms){
+                if(server.sizeLeft()>vm.getSize())
+                    return true;
+            }
+        }
+        return false;
+    }
 
-        double sizeLeftOnServer;
+    private ServerCollection findServersWithEnoughSpace(ServerCollection servers, Vm vm) throws ThereIsNoCapableServerForThisVmException {
+
         boolean serverHasEnoughCapacity;
 
         ServerCollection capableServers = new ServerCollection();
 
         for(Server server : servers){
 
-            sizeLeftOnServer = (100.0d - server.getLoad())*server.getCapacity()/100;
-            serverHasEnoughCapacity = sizeLeftOnServer>=vm.getSize();
+            serverHasEnoughCapacity = server.sizeLeft()>=vm.getSize();
 
             if(serverHasEnoughCapacity)
                 capableServers.add(server);
+
         }
-        if (capableServers.size() == 0)
+        boolean thereIsNoCapableServers = capableServers.size() == 0;
+
+        if (thereIsNoCapableServers)
             throw new ThereIsNoCapableServerForThisVmException(vm);
+
         return capableServers;
+    }
+
+    private boolean thereIsEnoughAvailableSpaceOverall(ServerCollection servers, int size) {
+        int freeSpace = 0;
+        for(Server server : servers){
+            freeSpace+=server.getCapacity()*(100.0d - server.getLoad());
+        }
+        return freeSpace>=size;
+    }
+
+    private void reassignVmsToFillUnusedSpace(ServerCollection servers, VmCollection vms){
+        clearServers(servers);
+        for(Server server : servers){
+            server.setVms(findOptimalVms(server, vms));
+        }
+    }
+
+    private VmCollection findOptimalVms(Server server, VmCollection vms) {
+        return new VmCollection();
+    }
+
+    private void clearServers(ServerCollection servers) {
+        for(Server server : servers){
+            server.getVms().clear();
+        }
     }
 
     private Server findLeastLoadedServer(ServerCollection servers) {
