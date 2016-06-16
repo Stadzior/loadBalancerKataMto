@@ -4,6 +4,8 @@ package edu.iis.mto.serverloadbalancer;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 
+import edu.iis.mto.serverloadbalancer.Collections.ServerCollection;
+import edu.iis.mto.serverloadbalancer.Collections.VmCollectionBuilder;
 import org.hamcrest.Matcher;
 import org.junit.Test;
 
@@ -19,8 +21,8 @@ public class ServerLoadBalancerTest {
 
 	@Test
 	public void balancigServer_noVm_ServerStaysEmpty(){
-		server = new ServerBuilder.withCapacity(1).build();
-		ServerLoadBalancer balancer = new ServerLoadBalancerBuilder.withVms(VmCollectionBuilder.Empty()).withServers(new ArrayList<Server>()).build();
+		server = new ServerBuilder().withCapacity(1).build();
+		ServerLoadBalancer balancer = new ServerLoadBalancerBuilder().withVms(VmCollectionBuilder.Empty()).withServers(new ServerCollection()).build();
 		balancer.balance();
 
 		assertThat(server, hasCurrentLoadOf(0.0d));

@@ -1,10 +1,11 @@
-package edu.iis.mto.serverloadbalancer;
+package edu.iis.mto.serverloadbalancer.Collections;
 
 /**
  * Created by Kamil on 2016-06-16.
  */
 public class VmCollectionBuilder {
-    static VmCollection Empty(){
+
+    public static VmCollection Empty(){
         return new VmCollection();
     }
 

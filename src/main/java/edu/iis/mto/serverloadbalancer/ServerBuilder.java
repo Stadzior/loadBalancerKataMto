@@ -10,8 +10,9 @@ public class ServerBuilder {
     ServerBuilder(){
         server = new Server();
     }
-    void withCapacity(int capacity){
+    ServerBuilder withCapacity(int capacity){
         server.setCapacity(capacity);
+        return this;
     }
 
     Server build(){

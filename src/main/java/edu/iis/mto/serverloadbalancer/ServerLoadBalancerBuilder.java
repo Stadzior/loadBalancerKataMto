@@ -1,12 +1,30 @@
 package edu.iis.mto.serverloadbalancer;
 
+import edu.iis.mto.serverloadbalancer.Collections.ServerCollection;
+import edu.iis.mto.serverloadbalancer.Collections.VmCollection;
+
 import java.util.ArrayList;
 
-/**
- * Created by Kamil on 2016-06-16.
- */
 public class ServerLoadBalancerBuilder {
-    void withVms(ArrayList<Vm> vms){
+    private ServerLoadBalancer loadBalancer;
 
+    ServerLoadBalancerBuilder(){
+        loadBalancer = new ServerLoadBalancer();
     }
+
+    ServerLoadBalancerBuilder withVms(VmCollection vms){
+        loadBalancer.setVms(vms);
+        return this;
+    }
+
+    public ServerLoadBalancerBuilder withServers(ServerCollection servers) {
+        loadBalancer.setServers(servers);
+        return this;
+    }
+
+    ServerLoadBalancer build(){
+        return loadBalancer;
+    }
+
+
 }
