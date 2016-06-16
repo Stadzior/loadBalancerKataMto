@@ -2,10 +2,12 @@ package edu.iis.mto.serverloadbalancer;
 
 
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.equalTo;
 
 import edu.iis.mto.serverloadbalancer.Collections.ServerCollection;
 import edu.iis.mto.serverloadbalancer.Collections.ServerCollectionBuilder;
+import edu.iis.mto.serverloadbalancer.Collections.VmCollection;
 import edu.iis.mto.serverloadbalancer.Collections.VmCollectionBuilder;
 import org.hamcrest.Matcher;
 import org.junit.Test;
@@ -13,7 +15,6 @@ import org.junit.Test;
 import java.util.ArrayList;
 
 public class ServerLoadBalancerTest {
-    Server server;
 
 	@Test
 	public void itCompiles() {
@@ -22,7 +23,7 @@ public class ServerLoadBalancerTest {
 
 	@Test
 	public void balancingServer_noVm_ServerStaysEmpty(){
-		server = new ServerBuilder().withCapacity(1).build();
+		Server server = new ServerBuilder().withCapacity(1).build();
 		ServerLoadBalancer balancer = new ServerLoadBalancerBuilder().withVms(VmCollectionBuilder.Empty()).withServers(new ServerCollection()).build();
 		balancer.balance();
 
@@ -31,7 +32,7 @@ public class ServerLoadBalancerTest {
 
     @Test
     public void balancingServer_OneVm_AllCapacityTaken(){
-        server = new ServerBuilder().withCapacity(1).build();
+        Server server = new ServerBuilder().withCapacity(1).build();
         Vm vm = new VmBuilder().withSize(1).build();
         ServerLoadBalancer balancer = new ServerLoadBalancerBuilder()
                 .withVms(new VmCollectionBuilder()
@@ -47,7 +48,7 @@ public class ServerLoadBalancerTest {
 
     @Test
     public void balancingServer_OneVm_SomeOfCapacityTaken(){
-        server = new ServerBuilder().withCapacity(2).build();
+        Server server = new ServerBuilder().withCapacity(2).build();
         Vm vm = new VmBuilder().withSize(1).build();
         ServerLoadBalancer balancer = new ServerLoadBalancerBuilder()
                 .withVms(new VmCollectionBuilder()
@@ -62,8 +63,8 @@ public class ServerLoadBalancerTest {
     }
 
     @Test
-    public void balancingServer_ThreeVms_OneServer_EnoughCapacity(){
-        server = new ServerBuilder().withCapacity(5).build();
+    public void balancingServer_ThreeVms_EnoughCapacity(){
+        Server server = new ServerBuilder().withCapacity(5).build();
         Vm vm1 = new VmBuilder().withSize(1).build();
         Vm vm2 = new VmBuilder().withSize(2).build();
         Vm vm3 = new VmBuilder().withSize(1).build();
@@ -79,6 +80,26 @@ public class ServerLoadBalancerTest {
                 .build();
         balancer.balance();
         assertThat(server.getVms().size(),equalTo(3));
+    }
+
+    @Test
+    public void balancer_ShouldAssignVm_ToLessLoadedServer(){
+        Vm vm1 = new VmBuilder().withSize(1).build();
+        Vm vm2 = new VmBuilder().withSize(2).build();
+        Server server1 = new ServerBuilder().withCapacity(5).build();
+        Server server2 = new ServerBuilder().withCapacity(5).build();
+                ServerLoadBalancer balancer = new ServerLoadBalancerBuilder()
+                .withVms(new VmCollectionBuilder()
+                        .withVm(vm1)
+                        .withVm(vm2)
+                        .build())
+                .withServers(new ServerCollectionBuilder()
+                        .withServer(server1)
+                        .withServer(server2)
+                        .build())
+                .build();
+        balancer.balance();
+        assertThat(server2.getVms(),contains(vm2));
     }
 
     private Matcher<? super Server> hasCurrentLoadOf(double load) {
