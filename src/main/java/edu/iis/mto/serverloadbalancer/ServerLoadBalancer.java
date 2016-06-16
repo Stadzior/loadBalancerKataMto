@@ -10,31 +10,44 @@ public class ServerLoadBalancer {
     private ServerCollection servers;
     public void balance() {
         for(Vm vm : vms) {
-                findLeastLoadedServerWithEnoughCapacity(servers, vm).addVm(vm);
+            try {
+                findLeastLoadedServer(findServersWithEnoughCapacity(servers, vm)).addVm(vm);
+            }catch(ThereIsNoCapableServerForThisVmException e){
+                System.out.println(e.getMessage());
+            }
         }
     }
 
-    private Server findLeastLoadedServerWithEnoughCapacity(ServerCollection servers, Vm vm) {
+    private ServerCollection findServersWithEnoughCapacity(ServerCollection servers, Vm vm) throws ThereIsNoCapableServerForThisVmException {
+
         double sizeLeftOnServer;
         boolean serverHasEnoughCapacity;
+
         ServerCollection capableServers = new ServerCollection();
+
         for(Server server : servers){
+
             sizeLeftOnServer = (100.0d - server.getLoad())*server.getCapacity();
             serverHasEnoughCapacity = sizeLeftOnServer>vm.getSize();
+
             if(serverHasEnoughCapacity)
                 capableServers.add(server);
         }
-
-        return leastLoadedServer(capableServers);
+        if (capableServers.size() == 0)
+            throw new ThereIsNoCapableServerForThisVmException(vm);
+        return capableServers;
     }
 
-    private Server leastLoadedServer(ServerCollection capableServers) {
-        Server leastLoadedServer = new ServerBuilder().withCapacity(0).build();
-        leastLoadedServer.setLoad(FULL_LOAD);
-        for(Server server : capableServers){
+    private Server findLeastLoadedServer(ServerCollection servers) {
+
+        Server leastLoadedServer = servers.get(0);
+
+        for(Server server : servers){
+
             if(server.getLoad()<leastLoadedServer.getLoad())
                 leastLoadedServer = server;
         }
+
         return leastLoadedServer;
     }
 

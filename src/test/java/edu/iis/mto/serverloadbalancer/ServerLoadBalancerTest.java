@@ -102,6 +102,26 @@ public class ServerLoadBalancerTest {
         assertThat(server2.getVms(),contains(vm2));
     }
 
+    @Test
+    public void balancer_ShouldNotAssignVm_IfThereIsNoCapableServer(){
+        Vm vm1 = new VmBuilder().withSize(1).build();
+        Vm vm2 = new VmBuilder().withSize(4).build();
+        Vm vm3 = new VmBuilder().withSize(1).build();
+        Server server = new ServerBuilder().withCapacity(5).build();
+        ServerLoadBalancer balancer = new ServerLoadBalancerBuilder()
+                .withVms(new VmCollectionBuilder()
+                        .withVm(vm1)
+                        .withVm(vm2)
+                        .withVm(vm3)
+                        .build())
+                .withServers(new ServerCollectionBuilder()
+                        .withServer(server)
+                        .build())
+                .build();
+        balancer.balance();
+        assertThat(server.getVms().contains(vm3),equalTo(false));
+    }
+
     private Matcher<? super Server> hasCurrentLoadOf(double load) {
         return new CurrentLoadPercentageMatcher(load);
     }
