@@ -61,6 +61,26 @@ public class ServerLoadBalancerTest {
         assertThat(server, hasCurrentLoadOf(50.0d));
     }
 
+    @Test
+    public void balancingServer_ThreeVms_OneServer_EnoughCapacity(){
+        server = new ServerBuilder().withCapacity(5).build();
+        Vm vm1 = new VmBuilder().withSize(1).build();
+        Vm vm2 = new VmBuilder().withSize(2).build();
+        Vm vm3 = new VmBuilder().withSize(1).build();
+        ServerLoadBalancer balancer = new ServerLoadBalancerBuilder()
+                .withVms(new VmCollectionBuilder()
+                        .withVm(vm1)
+                        .withVm(vm2)
+                        .withVm(vm3)
+                        .build())
+                .withServers(new ServerCollectionBuilder()
+                        .withServer(server)
+                        .build())
+                .build();
+        balancer.balance();
+        assertThat(server.getVms().size(),equalTo(3));
+    }
+
     private Matcher<? super Server> hasCurrentLoadOf(double load) {
         return new CurrentLoadPercentageMatcher(load);
     }
