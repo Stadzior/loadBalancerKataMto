@@ -11,6 +11,7 @@ public class ServerLoadBalancer {
     private VmCollection vms;
     private ServerCollection servers;
     public void balance() {
+
     }
 
     public VmCollection getVms() {
