@@ -6,7 +6,7 @@ import java.util.List;
 public class Server {
 
 	private static final double MAXIMUM_LOAD = 100.0d;
-    public double currentLoadPercentage;
+    private double currentLoadPercentage;
 	private int capacity;
 	private List<Vm> vms = new ArrayList<Vm>();
 
@@ -16,7 +16,7 @@ public class Server {
 	}
 
 	public boolean contains(Vm vm) {
-		return true;
+		return vms.contains(vm);
 	}
 
 	public void addVm(Vm vm) {
@@ -29,4 +29,11 @@ public class Server {
 		return vms.size();
 	}
 
+    public double getCurrentLoadPercentage() {
+        return currentLoadPercentage;
+    }
+
+    public void setCurrentLoadPercentage(double currentLoadPercentage) {
+        this.currentLoadPercentage = currentLoadPercentage;
+    }
 }
