@@ -66,7 +66,7 @@ public class ServerLoadBalancerTest {
         balance(aListOfServersWith(moreLoadedServer,lessLoadedServer),aListOfVmsWith(vm));
 
         assertThat("the server should contain vm", lessLoadedServer.contains(vm));
-        assertThat("the server should contain vm", moreLoadedServer.contains(vm));
+        assertThat("the server should not contain vm", !moreLoadedServer.contains(vm));
     }
 
     private void balance(Server[] servers, Vm[] vms) {
@@ -84,6 +84,10 @@ public class ServerLoadBalancerTest {
 	private Server[] aListOfServersWith(Server server) {
 		return new Server[] { server };
 	}
+
+    private Server[] aListOfServersWith(Server moreLoadedServer, Server lessLoadedServer) {
+        return new Server[] {moreLoadedServer,lessLoadedServer};
+    }
 
 	private <T> T a(Builder<T> builder) {
 		return builder.build();
